@@ -81,13 +81,6 @@ NOINLINE void ProfileScopeData::Register(ProfileScopeData* data)
 
 NOINLINE void ProfileScopeData::Init()
 {
-#if defined(XMRIG_OS_APPLE)
-    mach_timebase_info_data_t info {};
-    mach_timebase_info(&info);
-
-    s_tscSpeed = 1e9 * static_cast<double>(info.denom) / info.numer;
-    LOG_INFO("%s counter frequency = %.3f GHz", xmrig::Tags::profiler(), s_tscSpeed / 1e9);
-#elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
     using namespace std::chrono;
 
     const uint64_t t1 = static_cast<uint64_t>(time_point_cast<nanoseconds>(high_resolution_clock::now()).time_since_epoch().count());
@@ -104,10 +97,6 @@ NOINLINE void ProfileScopeData::Init()
             return;
         }
     }
-#else
-    s_tscSpeed = 1e9;
-    LOG_INFO("%s counter frequency = %.3f GHz", xmrig::Tags::profiler(), s_tscSpeed / 1e9);
-#endif
 }
 
 

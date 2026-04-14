@@ -36,7 +36,6 @@
 #ifdef XMRIG_FEATURE_PROFILING
 
 
-#include <chrono>
 #include <cstdint>
 #include <cstddef>
 #include <type_traits>
@@ -45,24 +44,15 @@
 #include <intrin.h>
 #endif
 
-#if defined(XMRIG_OS_APPLE)
-#include <mach/mach_time.h>
-#endif
-
 
 static FORCE_INLINE uint64_t ReadTSC()
 {
-#if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
+#ifdef _MSC_VER
     return __rdtsc();
-#elif defined(__i386__) || defined(__x86_64__)
+#else
     uint32_t hi, lo;
     __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
     return (((uint64_t)hi) << 32) | lo;
-#elif defined(XMRIG_OS_APPLE)
-    return mach_absolute_time();
-#else
-    using namespace std::chrono;
-    return static_cast<uint64_t>(duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count());
 #endif
 }
 
